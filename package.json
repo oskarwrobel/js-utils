@@ -1,0 +1,10 @@
+{
+  "name": "js-utils",
+  "version": "1.0.0",
+  "description": "A set of utils that brings some enhancements to the pure JS.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Oskar Wróbel <kontakt@oskarwrobel.pl>",
+  "license": "ISC"
+}
