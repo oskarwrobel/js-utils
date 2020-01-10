@@ -25,7 +25,7 @@
     "typescript": "^3.7.4"
   },
   "lint-staged": {
-    "**/*.js": [
+    "**/*.(js|ts)": [
       "eslint --quiet"
     ]
   },
