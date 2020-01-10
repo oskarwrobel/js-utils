@@ -13,20 +13,18 @@
   ],
   "rules": {
     // ## TypeScript
-    "@typescript-eslint/explicit-function-return-type": "off",
-    "@typescript-eslint/no-explicit-any": 1,
-    "@typescript-eslint/no-inferrable-types": [
-      "warn",
+    "@typescript-eslint/explicit-function-return-type": "error",
+    "@typescript-eslint/no-explicit-any": [
+      "error",
       {
-        "ignoreParameters": true
+        "ignoreRestArgs": false
       }
     ],
-    "@typescript-eslint/no-unused-vars": "warn",
-
+    "@typescript-eslint/no-inferrable-types": "error",
+    "@typescript-eslint/no-unused-vars": "error",
     // ## Possible errors
     "no-console": "off",
     "no-constant-condition": "off",
-
     // ## Best practices
     "curly": [
       "error",
@@ -72,7 +70,6 @@
       "error",
       "never"
     ],
-
     // ## Variables
     "no-use-before-define": [
       "error",
@@ -82,7 +79,6 @@
         "variables": true
       }
     ],
-
     // ## Stylistic issues
     "array-bracket-spacing": [
       "error",
