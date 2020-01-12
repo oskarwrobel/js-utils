@@ -22,9 +22,11 @@
     ],
     "@typescript-eslint/no-inferrable-types": "error",
     "@typescript-eslint/no-unused-vars": "error",
+
     // ## Possible errors
     "no-console": "off",
     "no-constant-condition": "off",
+
     // ## Best practices
     "curly": [
       "error",
@@ -70,6 +72,7 @@
       "error",
       "never"
     ],
+
     // ## Variables
     "no-use-before-define": [
       "error",
@@ -79,6 +82,7 @@
         "variables": true
       }
     ],
+
     // ## Stylistic issues
     "array-bracket-spacing": [
       "error",
@@ -239,6 +243,7 @@
       "error",
       "never"
     ],
+
     // ## ECMAScript 6
     "arrow-parens": [
       "error",
