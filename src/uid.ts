@@ -2,7 +2,7 @@
  * Returns a unique id. This id consist of an 'e' character and a randomly generated string of 32 aphanumeric characters.
  * Each character in uid string represents a hexadecimal digit (base 16).
  *
- * @returns {String} A hexadecimal number representing the id.
+ * @returns A hexadecimal number representing the id.
  */
 export default function uid(): string {
 	let uuid = 'e'; // Make sure that id does not start with number.

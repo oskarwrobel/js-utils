@@ -1,9 +1,9 @@
 /**
- * Copies enumerable properties from the classe given as 2nd+ parameters to the
- * prototype of first object (a constructor).
+ * Copies enumerable properties from the classes given as 2nd+ parameters to the
+ * prototype of first class.
  *
- * @param {Function} targetClass Class which prototype will be extended.
- * @param {Function} [...mixins] Objects from which to get properties.
+ * @param targetClass Class which prototype will be extended.
+ * @param mixins List of classes from which to get properties.
  */
 export default function mix( targetClass: any, ...mixins: any[] ): void {
 	for ( const mixin of mixins ) {
