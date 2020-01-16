@@ -1,4 +1,4 @@
-import Emitter, { EmitterInterface } from '../src/emitter';
+import Emitter, { EmitterInterface, EmitterEvent } from '../src/emitter';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
@@ -26,16 +26,20 @@ describe( 'Emitter', () => {
 		it( 'should execute callbacks wit arguments', () => {
 			const spy1 = sinon.spy();
 			const spy2 = sinon.spy();
+			const spy3 = sinon.spy();
 
 			const obj = {};
 
 			emitterA.on( 'something', spy1 );
 			emitterA.on( 'something', spy2 );
+			emitterA.on( 'other', spy3 );
 
 			emitterA.fire( 'something', obj, 1, 'a', true );
+			sinon.assert.calledWithExactly( spy1, sinon.match.instanceOf( EmitterEvent ), obj, 1, 'a', true );
+			sinon.assert.calledWithExactly( spy2, sinon.match.instanceOf( EmitterEvent ), obj, 1, 'a', true );
 
-			sinon.assert.calledWithExactly( spy1, obj, 1, 'a', true );
-			sinon.assert.calledWithExactly( spy2, obj, 1, 'a', true );
+			emitterA.fire( 'other' );
+			sinon.assert.calledWithExactly( spy3, sinon.match.instanceOf( EmitterEvent ) );
 		} );
 
 		it( 'should do nothing for non subscribed event', () => {
@@ -72,6 +76,54 @@ describe( 'Emitter', () => {
 			emitterB.fire( 'something' );
 			sinon.assert.calledOnce( spy1 );
 			sinon.assert.calledOnce( spy2 );
+		} );
+
+		it( 'should prevent from calling further callbacks when `event.stop()` is called', () => {
+			const spy1 = sinon.spy();
+			const spy2 = sinon.spy();
+			const spy3 = sinon.spy();
+
+			function customSpy( evt: EmitterEvent ): void {
+				evt.stop();
+				spy2();
+			}
+
+			emitterA.listenTo( emitterB, 'something', spy1 );
+			emitterA.listenTo( emitterB, 'something', customSpy );
+			emitterA.listenTo( emitterB, 'something', spy3 );
+
+			emitterB.fire( 'something' );
+
+			sinon.assert.calledOnce( spy1 );
+			sinon.assert.calledOnce( spy2 );
+			sinon.assert.notCalled( spy3 );
+		} );
+
+		it( 'should remove callback from registered callbacks', () => {
+			const spy1 = sinon.spy();
+			const spy2 = sinon.spy();
+			const spy3 = sinon.spy();
+
+			function customSpy( evt: EmitterEvent ): void {
+				evt.off();
+				spy2();
+			}
+
+			emitterA.listenTo( emitterB, 'something', spy1 );
+			emitterA.listenTo( emitterB, 'something', customSpy );
+			emitterA.listenTo( emitterB, 'something', spy3 );
+
+			emitterB.fire( 'something' );
+
+			sinon.assert.calledOnce( spy1 );
+			sinon.assert.calledOnce( spy2 );
+			sinon.assert.calledOnce( spy3 );
+
+			emitterB.fire( 'something' );
+
+			sinon.assert.calledTwice( spy1 );
+			sinon.assert.calledOnce( spy2 );
+			sinon.assert.calledTwice( spy3 );
 		} );
 	} );
 

@@ -1,5 +1,5 @@
 export interface EmitterInterface extends Emitter {}
-type Callback = ( ...args: any ) => void;
+type Callback = ( arg0: EmitterEvent, ...args: any ) => void;
 
 /**
  * Injects Events emitter API into its host.
@@ -49,8 +49,20 @@ export default class Emitter implements EmitterInterface {
 			return;
 		}
 
-		for ( const callback of this._events.get( eventName ) ) {
-			callback( ...args );
+		const callbacks = this._events.get( eventName );
+
+		for ( const callback of Array.from( callbacks ) ) {
+			const event = new EmitterEvent( eventName );
+
+			callback( event, ...args );
+
+			if ( event.off.isCalled ) {
+				removeCallback( callbacks, callback );
+			}
+
+			if ( event.stop.isCalled ) {
+				return;
+			}
 		}
 	}
 
@@ -121,7 +133,7 @@ export default class Emitter implements EmitterInterface {
 		const eventCallbacks = emitter._events.get( eventName );
 
 		// Remove callbacks from lists where are registered.
-		emitterCallbacks.splice( emitterCallbacks.indexOf( callback ), 1 );
+		removeCallback( emitterCallbacks, callback );
 		eventCallbacks.splice( eventCallbacks.indexOf( callback ), 1 );
 
 		// Remove callback lists when are empty.
@@ -133,4 +145,60 @@ export default class Emitter implements EmitterInterface {
 			emitter._events.delete( eventName );
 		}
 	}
+}
+
+/**
+ * Event object passed to the each callback executed by the emitter.
+ *
+ * Provides an API to manipulate the event.
+ */
+export class EmitterEvent {
+	/**
+	 * Event name.
+	 */
+	readonly name: string;
+
+	/**
+	 * Prevents from calling further callbacks registered under this event name.
+	 */
+	stop: Spy;
+
+	/**
+	 * Removes the current callback.
+	 */
+	off: Spy;
+
+	/**
+	 * name Event name.
+	 */
+	constructor( name: string ) {
+		this.name = name;
+		this.stop = createSpy();
+		this.off = createSpy();
+	}
+}
+
+type Spy = { (): void; isCalled: boolean };
+
+/**
+ * Creates a spy function.
+ */
+function createSpy(): Spy {
+	const spy = function spy(): void {
+		spy.isCalled = true;
+	};
+
+	spy.isCalled = false;
+
+	return spy;
+}
+
+/**
+ * Removes callback from callbacks list.
+ *
+ * @param callbacks List of callbacks.
+ * @param callback Callback to remove.
+ */
+function removeCallback( callbacks: Callback[], callback: Callback ): void {
+	callbacks.splice( callbacks.indexOf( callback ), 1 );
 }
