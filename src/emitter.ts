@@ -1,4 +1,5 @@
 export type Callback = ( arg0: EmitterEvent, ...args: any ) => void;
+type Spy = { (): void; isCalled: boolean };
 
 /**
  * Injects Events emitter API into its host.
@@ -176,8 +177,6 @@ export class EmitterEvent {
 		this.off = createSpy();
 	}
 }
-
-type Spy = { (): void; isCalled: boolean };
 
 /**
  * Creates a spy function.
