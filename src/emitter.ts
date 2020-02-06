@@ -1,17 +1,16 @@
-export interface EmitterInterface extends Emitter {}
-type Callback = ( arg0: EmitterEvent, ...args: any ) => void;
+export type Callback = ( arg0: EmitterEvent, ...args: any ) => void;
 
 /**
  * Injects Events emitter API into its host.
  *
  * @mixin
  */
-export default class Emitter implements EmitterInterface {
+export default class Emitter {
 	/**
 	 * Map of emitters with register callbacks that are subscribed by this instance.
 	 * Used to recognize which callback was registered by this instance.
 	 */
-	private _subscribedEmitters: Map<EmitterInterface, Callback[]> = new Map();
+	private _subscribedEmitters: Map<Emitter, Callback[]> = new Map();
 
 	/**
 	 * Map of events and all registered callbacks under this event.
@@ -73,7 +72,7 @@ export default class Emitter implements EmitterInterface {
 	 * @param eventName Name of event.
 	 * @param callback Function executed when event is fired.
 	 */
-	listenTo( emitter: EmitterInterface, eventName: string, callback: Callback ): void {
+	listenTo( emitter: Emitter, eventName: string, callback: Callback ): void {
 		if ( !this._subscribedEmitters.has( emitter ) ) {
 			this._subscribedEmitters.set( emitter, [] );
 		}
@@ -96,7 +95,7 @@ export default class Emitter implements EmitterInterface {
 	 * @param eventName Name of event.
 	 * @param callback Function to stop being called.
 	 */
-	stopListening( emitter?: EmitterInterface, eventName?: string, callback?: Callback ): void {
+	stopListening( emitter?: Emitter, eventName?: string, callback?: Callback ): void {
 		if ( !this._subscribedEmitters.size || emitter && !this._subscribedEmitters.has( emitter ) ) {
 			return;
 		}
@@ -134,7 +133,7 @@ export default class Emitter implements EmitterInterface {
 
 		// Remove callbacks from lists where are registered.
 		removeCallback( emitterCallbacks, callback );
-		eventCallbacks.splice( eventCallbacks.indexOf( callback ), 1 );
+		removeCallback( eventCallbacks, callback );
 
 		// Remove callback lists when are empty.
 		if ( !emitterCallbacks.length ) {

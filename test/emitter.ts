@@ -1,9 +1,9 @@
-import Emitter, { EmitterInterface, EmitterEvent } from '../src/emitter';
+import Emitter, { EmitterEvent } from '../src/emitter';
 import { expect } from 'chai';
 import sinon from 'sinon';
 
 describe( 'Emitter', () => {
-	let emitterA: EmitterInterface, emitterB: EmitterInterface;
+	let emitterA: Emitter, emitterB: Emitter;
 
 	beforeEach( () => {
 		emitterA = new Emitter();
