@@ -1,6 +1,8 @@
-import Emitter, { EmitterEvent } from '../src/emitter';
 import { expect } from 'chai';
 import sinon from 'sinon';
+
+import Emitter, { EmitterEvent } from '../src/emitter';
+import mix from '../src/mix';
 
 describe( 'Emitter', () => {
 	let emitterA: Emitter, emitterB: Emitter;
@@ -8,6 +10,11 @@ describe( 'Emitter', () => {
 	beforeEach( () => {
 		emitterA = new Emitter();
 		emitterB = new Emitter();
+	} );
+
+	afterEach( () => {
+		emitterA.stopListening();
+		emitterB.stopListening();
 	} );
 
 	describe( 'fire()', () => {
@@ -256,6 +263,31 @@ describe( 'Emitter', () => {
 
 			sinon.assert.calledOnce( spy1 );
 			sinon.assert.notCalled( spy2 );
+		} );
+	} );
+
+	describe( 'mixin', () => {
+		it( 'should works as a mixin', () => {
+			class EmitterHost {}
+			interface EmitterHost extends Emitter {}
+			mix( EmitterHost, Emitter );
+
+			const spy = sinon.spy();
+			const emitterA = new EmitterHost();
+			const emitterB = new EmitterHost();
+
+			emitterA.listenTo( emitterB, 'something', spy );
+
+			emitterA.fire( 'something' );
+
+			sinon.assert.notCalled( spy );
+
+			emitterB.fire( 'something' );
+
+			sinon.assert.calledOnce( spy );
+
+			emitterA.stopListening();
+			emitterB.stopListening();
 		} );
 	} );
 } );

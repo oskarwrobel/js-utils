@@ -11,12 +11,12 @@ export default class Emitter {
 	 * Map of emitters with register callbacks that are subscribed by this instance.
 	 * Used to recognize which callback was registered by this instance.
 	 */
-	private _subscribedEmitters: Map<Emitter, Callback[]> = new Map();
+	private _subscribedEmitters: Map<Emitter, Callback[]>;
 
 	/**
 	 * Map of events and all registered callbacks under this event.
 	 */
-	private _events: Map<string, Callback[]> = new Map();
+	private _events: Map<string, Callback[]>;
 
 	/**
 	 * Registers a callback function to be executed when an event is fired.
@@ -45,11 +45,11 @@ export default class Emitter {
 	 * @param args Additional arguments passed to the callback.
 	 */
 	fire( eventName: string, ...args: any[] ): void {
-		if ( !this._events.has( eventName ) ) {
+		if ( !this._events || !this._events.has( eventName ) ) {
 			return;
 		}
 
-		const callbacks = this._events.get( eventName );
+		const callbacks: Callback[] = this._events.get( eventName );
 
 		for ( const callback of Array.from( callbacks ) ) {
 			const event = new EmitterEvent( eventName );
@@ -74,8 +74,16 @@ export default class Emitter {
 	 * @param callback Function executed when event is fired.
 	 */
 	listenTo( emitter: Emitter, eventName: string, callback: Callback ): void {
+		if ( !this._subscribedEmitters ) {
+			this._subscribedEmitters = new Map();
+		}
+
 		if ( !this._subscribedEmitters.has( emitter ) ) {
 			this._subscribedEmitters.set( emitter, [] );
+		}
+
+		if ( !emitter._events ) {
+			emitter._events = new Map();
 		}
 
 		if ( !emitter._events.has( eventName ) ) {
@@ -97,11 +105,15 @@ export default class Emitter {
 	 * @param callback Function to stop being called.
 	 */
 	stopListening( emitter?: Emitter, eventName?: string, callback?: Callback ): void {
-		if ( !this._subscribedEmitters.size || emitter && !this._subscribedEmitters.has( emitter ) ) {
+		if ( !this._subscribedEmitters || !this._subscribedEmitters.size ) {
 			return;
 		}
 
-		if ( eventName && !emitter._events.has( eventName ) ) {
+		if ( emitter && ( !this._subscribedEmitters || !this._subscribedEmitters.has( emitter ) ) ) {
+			return;
+		}
+
+		if ( eventName && ( !emitter._events || !emitter._events.has( eventName ) ) ) {
 			return;
 		}
 
