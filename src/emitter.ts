@@ -2,9 +2,9 @@ export type Callback = ( arg0: EmitterEvent, ...args: any ) => void;
 type Spy = { (): void; isCalled: boolean };
 
 /**
- * Injects Events emitter API into its host.
+ * Events Emitter.
  *
- * @mixin
+ * Can be used as a standalone instance as well as a mixin.
  */
 export default class Emitter {
 	/**
