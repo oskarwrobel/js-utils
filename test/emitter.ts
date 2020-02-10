@@ -267,7 +267,7 @@ describe( 'Emitter', () => {
 	} );
 
 	describe( 'mixin', () => {
-		it( 'should works as a mixin', () => {
+		it( 'should work as a mixin', () => {
 			class EmitterHost {}
 			interface EmitterHost extends Emitter {}
 			mix( EmitterHost, Emitter );
