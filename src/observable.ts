@@ -77,6 +77,10 @@ class Observable {
 			this._sourcePropertyToTarget = new Map();
 		}
 
+		if ( this._targetToSourceDefinition.has( targetCallback ) ) {
+			throw new Error( 'Cannot bind the same callback twice.' );
+		}
+
 		return {
 			/**
 			 * @param properties

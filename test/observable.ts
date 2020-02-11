@@ -165,6 +165,16 @@ describe( 'Observable', () => {
 			} ).to.not.throw();
 		} );
 
+		it( 'should throw when try to bind the same callback twice', () => {
+			const callback = sinon.spy();
+
+			observable.bind( callback ).to( observable, 'foo' );
+
+			expect( () => {
+				observable.bind( callback ).to( observable, 'bar' );
+			} ).to.throw( Error, 'Cannot bind the same callback twice.' );
+		} );
+
 		it( 'should unbind the given callback', () => {
 			const observableA = new Observable();
 			const spy = sinon.spy();
