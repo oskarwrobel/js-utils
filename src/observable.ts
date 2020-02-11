@@ -142,6 +142,36 @@ class Observable {
 			}
 		};
 	}
+
+	/**
+	 * Removes the binding for given callback.
+	 *
+	 * @param targetCallback
+	 */
+	unbind( targetCallback: ObservableTarget ): void {
+		if ( !this._targetToSourceDefinition || !this._targetToSourceDefinition.has( targetCallback ) ) {
+			return;
+		}
+
+		this._targetToSourceDefinition.delete( targetCallback );
+
+		for ( const [ observable, propertyToTarget ] of this._sourcePropertyToTarget ) {
+			for ( const [ property, targets ] of propertyToTarget ) {
+				if ( targets.has( targetCallback ) ) {
+					targets.delete( targetCallback );
+
+					if ( !targets.size ) {
+						propertyToTarget.delete( property );
+						this.stopListening( observable, 'change:' + property );
+
+						if ( !propertyToTarget.size ) {
+							this._sourcePropertyToTarget.delete( observable );
+						}
+					}
+				}
+			}
+		}
+	}
 }
 
 mix( Observable, Emitter );
