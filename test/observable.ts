@@ -1,3 +1,4 @@
+import { expect } from 'chai';
 import sinon from 'sinon';
 
 import Observable from '../src/observable';
@@ -44,6 +45,18 @@ describe( 'Observable', () => {
 			sinon.assert.calledTwice( spy );
 			sinon.assert.calledWithExactly( spy.lastCall, sinon.match.instanceOf( EmitterEvent ), 'b', 'a' );
 		} );
+
+		it( 'should not fire an event when value has not changed', () => {
+			const spy = sinon.spy();
+
+			observable.set( 'foo', 'a' );
+
+			observable.on( 'change:foo', spy );
+
+			observable.foo = 'a';
+
+			sinon.assert.notCalled( spy );
+		} );
 	} );
 
 	describe( 'bind()', () => {
@@ -72,18 +85,68 @@ describe( 'Observable', () => {
 			const observableA = new Observable();
 			const observableB = new Observable();
 
-			observable.bind( spy ).to( observableA, 'foo', observableB, 'bar' );
+			observableA.set( 'a', 1 );
+			observableA.set( 'b', 2 );
+			observableB.set( 'a', 3 );
+			observableB.set( 'b', 4 );
+
+			observable.bind( spy ).to( observableA, 'a', observableA, 'b', observableB, 'a', observableB, 'b' );
 
 			sinon.assert.calledOnce( spy );
-			sinon.assert.calledWithExactly( spy.lastCall, undefined, undefined );
+			sinon.assert.calledWithExactly( spy.lastCall, 1, 2, 3, 4 );
 
-			observableA.set( 'foo', 'a' );
+			observableA.a = 11;
 			sinon.assert.calledTwice( spy );
-			sinon.assert.calledWithExactly( spy.lastCall, 'a', undefined );
+			sinon.assert.calledWithExactly( spy.lastCall, 11, 2, 3, 4 );
 
-			observableB.set( 'bar', 'b' );
+			observableB.b = 44;
 			sinon.assert.calledThrice( spy );
-			sinon.assert.calledWithExactly( spy.lastCall, 'a', 'b' );
+			sinon.assert.calledWithExactly( spy.lastCall, 11, 2, 3, 44 );
+		} );
+
+		it( 'should allow to bind multiple callbacks to the same observable', () => {
+			const observableA = new Observable();
+			const spy1 = sinon.spy();
+			const spy2 = sinon.spy();
+
+			observable.bind( spy1 ).to( observableA, 'foo' );
+			observable.bind( spy2 ).to( observableA, 'foo' );
+
+			sinon.assert.calledOnce( spy1 );
+			sinon.assert.calledWithExactly( spy1, undefined );
+			sinon.assert.calledOnce( spy2 );
+			sinon.assert.calledWithExactly( spy2, undefined );
+
+			observableA.set( 'foo', 'abc' );
+
+			sinon.assert.calledTwice( spy1 );
+			sinon.assert.calledWithExactly( spy1.lastCall, 'abc' );
+			sinon.assert.calledTwice( spy2 );
+			sinon.assert.calledWithExactly( spy2.lastCall, 'abc' );
+		} );
+
+		it( 'should throw an error when source is invalid (single observable)', () => {
+			expect( () => {
+				observable.bind( () => 'sth' ).to( observable );
+			} ).to.throw( Error, 'Invalid source definition.' );
+		} );
+
+		it( 'should throw an error when source is invalid (single property)', () => {
+			expect( () => {
+				observable.bind( () => 'sth' ).to( 'foo' );
+			} ).to.throw( Error, 'Invalid source definition.' );
+		} );
+
+		it( 'should throw an error when source is invalid (multiple observables)', () => {
+			expect( () => {
+				observable.bind( () => 'sth' ).to( observable, observable );
+			} ).to.throw( Error, 'Invalid source definition.' );
+		} );
+
+		it( 'should throw an error when source is invalid (multiple properties)', () => {
+			expect( () => {
+				observable.bind( () => 'sth' ).to( 'foo', 'bar' );
+			} ).to.throw( Error, 'Invalid source definition.' );
 		} );
 	} );
 } );

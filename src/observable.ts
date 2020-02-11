@@ -1,12 +1,12 @@
 import Emitter from './emitter';
 import mix from './mix';
 
-interface Observable {
+interface Observable extends Emitter {
 	[ key: string ]: any;
 }
 
 type ObservableTarget = ( ...args: any ) => void;
-type ObservableSource = Array<Observable | string>;
+type ObservableSource = Array<Observable & string>;
 type SourceDefinition = Map<Observable, Set<string>>;
 type ObservablePropertyToTarget = Map<string, Set<ObservableTarget>>;
 
@@ -14,14 +14,27 @@ interface BindingTypes {
 	to( ...args: ObservableSource ): void;
 }
 
+/**
+ * Provides observable properties and data binding functionality.
+ *
+ * Can be used as a standalone instance as well as a mixin.
+ */
 class Observable {
 	private _observables: Map<string, any>;
 	private _targetToSourceDefinition: Map<ObservableTarget, SourceDefinition>;
 	private _sourcePropertyToTarget: Map<Observable, ObservablePropertyToTarget>;
 
 	/**
-	 * @param name
-	 * @param value
+	 * Creates an observable property and sets the value of it.
+	 *
+	 * Object on which an observable property has changed fires an
+	 * ( change:propertyName: string, newValue: any, oldValue: any ) event.
+	 *
+	 * observable.set( 'foo', 'bar' ); // Initializes observable.
+	 * observable.foo = 'biz'; // Changes the value of already initialized observable.
+	 *
+	 * @param name The property name.
+	 * @param value The property value.
 	 */
 	set( name: string, value: any ): void {
 		if ( !this._observables ) {
@@ -49,7 +62,14 @@ class Observable {
 	}
 
 	/**
-	 * @param targetCallback
+	 * Binds callback to other objects that implements Observable interface.
+	 *
+	 * It is possible to bind callback to one or to multiple observables:
+	 *
+	 * observable.bind( a => ... ) ).to( otherObservable, 'a' );
+	 * observable.bind( ( a, b ) => ... ) ).to( otherObservable, 'a', otherObservable, 'b' );
+	 *
+	 * @param targetCallback The callback that will be called when any of bound observables change.
 	 */
 	bind( targetCallback: ObservableTarget ): BindingTypes {
 		if ( !this._targetToSourceDefinition && !this._sourcePropertyToTarget ) {
@@ -131,9 +151,17 @@ export default Observable;
 function formatSource( properties: ObservableSource ): SourceDefinition {
 	const definition = new Map();
 
+	if ( properties.length < 2 ) {
+		throw new Error( 'Invalid source definition.' );
+	}
+
 	for ( let i = 0; i < properties.length - 1; i += 2 ) {
 		const source = properties[ i ];
 		const property = properties[ i + 1 ];
+
+		if ( typeof source === 'string' || typeof source.bind !== 'function' ) {
+			throw new Error( 'Invalid source definition.' );
+		}
 
 		if ( typeof property !== 'string' ) {
 			throw new Error( 'Invalid source definition.' );
