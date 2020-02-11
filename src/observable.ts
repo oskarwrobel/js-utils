@@ -6,7 +6,7 @@ interface Observable extends Emitter {
 }
 
 type ObservableTarget = ( ...args: any ) => void;
-type ObservableSource = Array<Observable & string>;
+type ObservableSource = Array<Observable | string>;
 type SourceDefinition = Map<Observable, Set<string>>;
 type ObservablePropertyToTarget = Map<string, Set<ObservableTarget>>;
 
