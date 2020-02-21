@@ -36,7 +36,7 @@ class Observable {
 	 * @param name The property name.
 	 * @param value The property value.
 	 */
-	set( name: string, value: any ): void {
+	set( name: string, value?: any ): void {
 		if ( !this._observables ) {
 			this._observables = new Map();
 		}
