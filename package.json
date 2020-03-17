@@ -1,7 +1,7 @@
 {
   "name": "js-utils",
   "version": "1.0.0",
-  "description": "A set of utils that brings some enhancements to the pure JS.",
+  "description": "A set of utils that brings some enhancements to the JS code written in TypeScript.",
   "scripts": {
     "test": "jest",
     "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet"
