@@ -4,11 +4,16 @@ import sinon from 'sinon';
 import Observable from '../src/observable';
 import { EmitterEvent } from '../src/emitter';
 
+interface CustomObservable extends Observable {
+	foo: any;
+	bar: any;
+}
+
 describe( 'Observable', () => {
-	let observable: Observable;
+	let observable: CustomObservable;
 
 	beforeEach( () => {
-		observable = new Observable();
+		observable = new Observable() as CustomObservable;
 	} );
 
 	afterEach( () => {
@@ -63,49 +68,49 @@ describe( 'Observable', () => {
 		it( 'should execute callback that is bind to single property', () => {
 			const spy = sinon.spy();
 
-			observable.bind( spy ).to( observable, 'something' );
+			observable.bind( spy ).to( observable, 'bar' );
 			sinon.assert.calledOnce( spy );
 			sinon.assert.calledWithExactly( spy.lastCall, undefined );
 
-			observable.set( 'other', 'a' );
+			observable.set( 'foo', 'a' );
 			sinon.assert.calledOnce( spy ); // Still once.
 
-			observable.set( 'something', 'foo' );
+			observable.set( 'bar', 'b' );
 			sinon.assert.calledTwice( spy );
-			sinon.assert.calledWithExactly( spy.lastCall, 'foo' );
+			sinon.assert.calledWithExactly( spy.lastCall, 'b' );
 
-			observable.something = 'bar';
+			observable.bar = 'c';
 			sinon.assert.calledThrice( spy );
-			sinon.assert.calledWithExactly( spy.lastCall, 'bar' );
+			sinon.assert.calledWithExactly( spy.lastCall, 'c' );
 		} );
 
 		it( 'should execute callback that is bind to multiple property', () => {
 			const spy = sinon.spy();
 
-			const observableA = new Observable();
-			const observableB = new Observable();
+			const observableA = new Observable() as CustomObservable;
+			const observableB = new Observable() as CustomObservable;
 
-			observableA.set( 'a', 1 );
-			observableA.set( 'b', 2 );
-			observableB.set( 'a', 3 );
-			observableB.set( 'b', 4 );
+			observableA.set( 'foo', 1 );
+			observableA.set( 'bar', 2 );
+			observableB.set( 'foo', 3 );
+			observableB.set( 'bar', 4 );
 
-			observable.bind( spy ).to( observableA, 'a', observableA, 'b', observableB, 'a', observableB, 'b' );
+			observable.bind( spy ).to( observableA, 'foo', observableA, 'bar', observableB, 'foo', observableB, 'bar' );
 
 			sinon.assert.calledOnce( spy );
 			sinon.assert.calledWithExactly( spy.lastCall, 1, 2, 3, 4 );
 
-			observableA.a = 11;
+			observableA.foo = 11;
 			sinon.assert.calledTwice( spy );
 			sinon.assert.calledWithExactly( spy.lastCall, 11, 2, 3, 4 );
 
-			observableB.b = 44;
+			observableB.bar = 44;
 			sinon.assert.calledThrice( spy );
 			sinon.assert.calledWithExactly( spy.lastCall, 11, 2, 3, 44 );
 		} );
 
 		it( 'should allow to bind multiple callbacks to the same observable', () => {
-			const observableA = new Observable();
+			const observableA = new Observable() as CustomObservable;
 			const spy1 = sinon.spy();
 			const spy2 = sinon.spy();
 
@@ -176,7 +181,7 @@ describe( 'Observable', () => {
 		} );
 
 		it( 'should unbind the given callback', () => {
-			const observableA = new Observable();
+			const observableA = new Observable() as CustomObservable;
 			const spy = sinon.spy();
 
 			observableA.set( 'foo', 1 );
@@ -191,8 +196,8 @@ describe( 'Observable', () => {
 		} );
 
 		it( 'should unbind the given callback when more than one callback is bound to the same observables', () => {
-			const observableA = new Observable();
-			const observableB = new Observable();
+			const observableA = new Observable() as CustomObservable;
+			const observableB = new Observable() as CustomObservable;
 			const spy1 = sinon.spy();
 			const spy2 = sinon.spy();
 
@@ -218,8 +223,8 @@ describe( 'Observable', () => {
 		} );
 
 		it( 'should unbind given callback and do not touch other properties', () => {
-			const observableA = new Observable();
-			const observableB = new Observable();
+			const observableA = new Observable() as CustomObservable;
+			const observableB = new Observable() as CustomObservable;
 			const spy1 = sinon.spy();
 			const spy2 = sinon.spy();
 

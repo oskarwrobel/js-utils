@@ -1,4 +1,4 @@
-export type Callback = ( arg0: EmitterEvent, ...args: any ) => void;
+export type Callback = ( arg0: EmitterEvent, ...args: any[] ) => void;
 type Spy = { (): void; isCalled: boolean };
 
 /**

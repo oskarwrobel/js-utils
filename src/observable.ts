@@ -1,18 +1,15 @@
 import Emitter from './emitter';
 import mix from './mix';
 
-interface Observable extends Emitter {
-	[ key: string ]: any;
-}
-
 type ObservableTarget = ( ...args: any ) => void;
 type ObservableSource = Array<Observable | string>;
 type SourceDefinition = Map<Observable, Set<string>>;
 type ObservablePropertyToTarget = Map<string, Set<ObservableTarget>>;
-
-interface BindingTypes {
+type BindingTypes = {
 	to( ...args: ObservableSource ): void;
 }
+
+interface Observable extends Emitter {}
 
 /**
  * Provides observable properties and data binding functionality.
@@ -58,6 +55,9 @@ class Observable {
 			} );
 		}
 
+		// At this point property name is unknown.
+		// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+		// @ts-ignore
 		this[ name ] = value;
 	}
 
@@ -216,6 +216,9 @@ function collectAllTargetValues( sourceDefinition: SourceDefinition ): Array<any
 
 	for ( const [ source, properties ] of sourceDefinition ) {
 		for ( const property of properties ) {
+			// At this point property name is unknown.
+			// eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+			// @ts-ignore
 			values.push( source[ property ] );
 		}
 	}
