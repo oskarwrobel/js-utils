@@ -1,5 +1,5 @@
 {
-  "name": "js-utils",
+  "name": "@oskarwrobel/js-utils",
   "version": "1.0.0",
   "description": "A set of utils that brings some enhancements to the JS code written in TypeScript.",
   "scripts": {
@@ -7,6 +7,18 @@
     "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet"
   },
   "author": "Oskar Wróbel <kontakt@oskarwrobel.pl>",
+  "keywords": [
+    "js-utils",
+    "ts-utils"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oskarwrobel/js-utils.git"
+  },
+  "bugs": {
+    "url": "https://github.com/oskarwrobel/js-utils/issues"
+  },
+  "homepage": "https://github.com/oskarwrobel/js-utils#readme",
   "license": "ISC",
   "devDependencies": {
     "@oskarwrobel/eslint-config": "^1.0.0",
