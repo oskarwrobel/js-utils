@@ -19,8 +19,9 @@ export interface ObservableInterface extends EmitterInterface {
  *
  * Provides observable properties and data binding functionality.
  */
-export default function<T extends { new( ...args: any[] ): {} }>( constructor: T ): T {
-	return class extends emitterDecorator( constructor ) {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export default function ObservableDecorator<T extends { new( ...args: any[] ): {} }>( constructor: T ) {
+	return class extends emitterDecorator( constructor ) implements ObservableInterface {
 		private _observables: Map<string, any>;
 		private _targetToSourceDefinition: Map<ObservableTarget, SourceDefinition>;
 		private _sourcePropertyToTarget: Map<ObservableInterface, ObservablePropertyToTarget>;

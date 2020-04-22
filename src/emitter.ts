@@ -16,7 +16,8 @@ export interface EmitterInterface {
  *
  * Injects EmitterInterface to a host class.
  */
-export default function<T extends { new( ...args: any[] ): {} }>( constructor: T ): T {
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+export default function<T extends { new( ...args: any[] ): {} }>( constructor: T ) {
 	return class extends constructor implements EmitterInterface {
 		/**
 		 * Map of emitters with register callbacks that are subscribed by this instance.
