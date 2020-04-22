@@ -1,19 +1,20 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 
-import Observable from '../src/observable';
+import Observable, { ObservableInterface } from '../src/observable';
 import { EmitterEvent } from '../src/emitter';
 
-interface CustomObservable extends Observable {
-	foo: any;
-	bar: any;
-}
-
 describe( 'Observable', () => {
-	let observable: CustomObservable;
+	@Observable class ObservableClass {}
+	interface ObservableClass extends ObservableInterface {
+		foo: any;
+		bar: any;
+	}
+
+	let observable: ObservableClass;
 
 	beforeEach( () => {
-		observable = new Observable() as CustomObservable;
+		observable = new ObservableClass();
 	} );
 
 	afterEach( () => {
@@ -87,8 +88,8 @@ describe( 'Observable', () => {
 		it( 'should execute callback that is bind to multiple property', () => {
 			const spy = sinon.spy();
 
-			const observableA = new Observable() as CustomObservable;
-			const observableB = new Observable() as CustomObservable;
+			const observableA = new ObservableClass();
+			const observableB = new ObservableClass();
 
 			observableA.set( 'foo', 1 );
 			observableA.set( 'bar', 2 );
@@ -110,7 +111,7 @@ describe( 'Observable', () => {
 		} );
 
 		it( 'should allow to bind multiple callbacks to the same observable', () => {
-			const observableA = new Observable() as CustomObservable;
+			const observableA = new ObservableClass();
 			const spy1 = sinon.spy();
 			const spy2 = sinon.spy();
 
@@ -181,7 +182,7 @@ describe( 'Observable', () => {
 		} );
 
 		it( 'should unbind the given callback', () => {
-			const observableA = new Observable() as CustomObservable;
+			const observableA = new ObservableClass();
 			const spy = sinon.spy();
 
 			observableA.set( 'foo', 1 );
@@ -196,8 +197,8 @@ describe( 'Observable', () => {
 		} );
 
 		it( 'should unbind the given callback when more than one callback is bound to the same observables', () => {
-			const observableA = new Observable() as CustomObservable;
-			const observableB = new Observable() as CustomObservable;
+			const observableA = new ObservableClass();
+			const observableB = new ObservableClass();
 			const spy1 = sinon.spy();
 			const spy2 = sinon.spy();
 
@@ -223,8 +224,8 @@ describe( 'Observable', () => {
 		} );
 
 		it( 'should unbind given callback and do not touch other properties', () => {
-			const observableA = new Observable() as CustomObservable;
-			const observableB = new Observable() as CustomObservable;
+			const observableA = new ObservableClass();
+			const observableB = new ObservableClass();
 			const spy1 = sinon.spy();
 			const spy2 = sinon.spy();
 
